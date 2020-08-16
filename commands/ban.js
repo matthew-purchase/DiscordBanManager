@@ -11,7 +11,7 @@ exports.run = (client, message, args) => {
       } catch (e) {
           console.error(e)
       } finally {
-          message.reply(`${User} was banned for \`${banReason}\``)
+          message.author.send(`${User} was banned for \`${banReason}\``)
           console.log(`${message.author.tag} banned ${User.tag} for ${banReason}`)
       }
   }
