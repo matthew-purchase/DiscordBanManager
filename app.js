@@ -12,20 +12,30 @@ fs.readdir("./events/", (err, files) => {
   });
 });
 
+const commands = new Discord.Collection()
+
+fs.readdirSync('./commands').map((directory) => {
+  fs.readdirSync(`./commands/${directory}/`).map((file) => {
+      let CMD = require(`../commands/${directory}/${file}`)
+      console.log(`Command ${CMD.name} loaded`)
+      
+      client.commands.set(CMD.name, CMD)
+  })
+})
+
 client.on("message", message => {
   if (message.author.bot) return;
   if(message.content.indexOf(config.prefix) !== 0) return;
 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-  const command = args.shift().toLowerCase();
+  const lower = args.shift().toLowerCase();
 
-  try {
-    let commandFile = require(`./commands/${command}.js`);
-    commandFile.run(client, message, args);
-    console.log(message.author.username, `used Command: ${command}`)
-  } catch (err) {
-    console.error(err);
-  }
+  if (this.commands.has(lower)) {
+    const commandFiles = this.commands.get(lower)
+    //Run files in directories
+    commandFiles.run(this, message, args)
+  } 
+
 });
 
 client.login(config.token);
